@@ -1,10 +1,11 @@
-import { saveTask,
-        getTasks, 
-        onGetTasks, 
-        deleteTask, 
-        getTask,
-        updateTask
-    } from './firebase.js'
+import {
+    saveTask,
+    getTasks,
+    onGetTasks,
+    deleteTask,
+    getTask,
+    updateTask
+} from './firebase.js'
 
 const taskForm = document.getElementById('task-form')
 const tasksContainer = document.getElementById('tasks-container')
@@ -16,32 +17,34 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     onGetTasks((querySnapshot) => {
 
-        let html = ''
+        tasksContainer.innerHTML = ''
 
         querySnapshot.forEach(doc => {
             const task = doc.data()
-            html += `
-            <div>
-                <h3>${task.title}</h3>
+            tasksContainer.innerHTML += `
+            <div class="card card-body mt-2 border-primary">
+                <h3 class="h5">${task.title}</h3>
                 <p>${task.description}</p>
-                <button class='btn-delete' data-id="${doc.id}">Delete</button>
-                <button class='btn-edit' data-id="${doc.id}">Edit</button>
+                <div class="d-flex">
+                    <button class='btn btn-primary btn-delete' data-id="${doc.id}">Delete</button>
+                    <button class='btn btn-secondary btn-edit' data-id="${doc.id}">Edit</button>
+                </div>
             </div>
             `
         })
 
-        tasksContainer.innerHTML = html
+
 
         const btnsDelete = tasksContainer.querySelectorAll('.btn-delete')
 
-        btnsDelete.forEach(btn =>{
-            btn.addEventListener('click', ({target: {dataset}}) => {
+        btnsDelete.forEach(btn => {
+            btn.addEventListener('click', ({ target: { dataset } }) => {
                 deleteTask(dataset.id)
             })
         })
         const btnsEdit = tasksContainer.querySelectorAll('.btn-edit')
-        btnsEdit.forEach(btn =>{
-            btn.addEventListener('click',async(e) =>{
+        btnsEdit.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
                 const doc = await getTask(e.target.dataset.id)
                 const task = doc.data()
 
@@ -63,13 +66,13 @@ taskForm.addEventListener('submit', (e) => {
     const title = taskForm['task-title']
     const description = taskForm['task-description']
 
-    if (!editstatus) 
-    saveTask(title.value, description.value)
+    if (!editstatus)
+        saveTask(title.value, description.value)
     else
-    updateTask(id, {
-        title: title.value,
-        description: description.value
-    })
+        updateTask(id, {
+            title: title.value,
+            description: description.value
+        })
 
     editstatus = false
 
